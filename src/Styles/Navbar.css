@@ -1,0 +1,54 @@
+nav {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    background-color:transparent; 
+    backdrop-filter: blur(10px); /* Apply a blur effect to the background */
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    position: fixed;
+    height:60px; 
+    display: flex; 
+    justify-content:flex-end ; 
+    align-items: center;
+}
+
+nav button {
+    height: 40px; /* Updated height */
+    width: 130px; /* Updated width */
+    line-height: 20px; /* Centering text vertically */
+    letter-spacing: 1.2px;
+    background-color: transparent;
+    align-items: center;
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 10px;
+    border: 0px;
+   
+}
+
+nav button a {
+    color: #fff; /* Set the color of the text within the NavLink to white */
+    text-decoration: none; /* Remove underline */
+}
+
+nav button::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #5c319f;
+  transition: width 0.3s ease;
+}
+
+nav button:hover::before {
+  width: 100%;
+}
+
+nav button:hover {
+  color: white;
+  background-color: #5c319f;
+}
