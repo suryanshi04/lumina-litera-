@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background: url('./components/bg.png');
+  background-color: #31291A;
   background-size: cover; /* Make sure the image covers the entire background */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Prevent the image from repeating */

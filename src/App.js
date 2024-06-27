@@ -1,27 +1,18 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import Register from './components/Register';
+import Login from './components/Login';
 import Home from './components/Home';
-import About from './components/About';
-import Projects from './components/Projects';
-import Contact from './components/Contact';
-import Resume from './components/resume';
-import './App.css';
 
-const App = () => {
-  return (
-    <div>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/home" element={<Home />}/>
-        <Route path="/resume" element={<Resume />}/>
-      </Routes>
-    </div>
-  );
-};
+const App = () => (
+  <div className="App">
+    <Routes>
+      <Route path='/Home' element={<Home/>} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Navigate to="/Home" />} />
+    </Routes>
+  </div>
+);
 
 export default App;
