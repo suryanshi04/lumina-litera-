@@ -1,40 +1,89 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
 const Login = () => {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [isRegister, setIsRegister] = useState(false);
 
-    const { email, password } = formData;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let endpoint = isRegister ? '/users/signup' : '/users/login';
+      let data = isRegister ? { name, email, password } : { email, password };
+      let response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-    const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
 
-    const onSubmit = async e => {
-        e.preventDefault();
+      let result = await response.json();
+      console.log('Response from server:', result);
 
-        const user = { email, password };
+      if (!result.error) {
+        window.location.href = '/home'; // Redirect on successful login/signup
+      } else {
+        alert(result.message); // Show error message
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to connect to the server or unexpected response.');
+    }
+  };
 
-        try {
-            const res = await axios.post('http://localhost:5000/users/login', user);
-            console.log(res.data);
-        } catch (err) {
-            console.error(err.response.data);
-        }
-    };
-
-    return (
-        <form onSubmit={onSubmit}>
-            <div>
-                <input type="email" placeholder="Email" name="email" value={email} onChange={onChange} required />
-            </div>
-            <div>
-                <input type="password" placeholder="Password" name="password" value={password} onChange={onChange} required />
-            </div>
-            <input type="submit" value="Login" />
-        </form>
-    );
+  return (
+    <div className="container">
+      <form onSubmit={handleSubmit}>
+        {isRegister && (
+          <div className="form-group">
+            <label htmlFor="username">Name:</label>
+            <input
+              type="text"
+              className="form-control"
+              id="username"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+        )}
+        <div className="form-group">
+          <label htmlFor="email">Email address:</label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">
+          {isRegister ? 'Register' : 'Log In'}
+        </button>
+        <button type="button" className="btn btn-link" onClick={() => setIsRegister(!isRegister)}>
+          {isRegister ? 'Already have an account? Log in here' : 'Don\'t have an account? Sign up here'}
+        </button>
+      </form>
+    </div>
+  );
 };
 
 export default Login;

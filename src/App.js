@@ -1,18 +1,18 @@
 import React from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import Register from './components/Register';
-import Login from './components/Login';
-import Home from './components/Home';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './components/Login'; // Assuming Login.js is in components folder
+import Home from './components/Home'; // Example: Home component for authenticated users
+import './App.css';
 
-const App = () => (
-  <div className="App">
-    <Routes>
-      <Route path='/Home' element={<Home/>} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Navigate to="/Home" />} />
-    </Routes>
-  </div>
-);
+const App = () => {
+  return (
+      <div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </div>
+  );
+};
 
 export default App;

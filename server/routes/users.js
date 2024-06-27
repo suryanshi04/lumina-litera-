@@ -1,69 +1,56 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+const joi = require("@hapi/joi");
+const models = require("../models/users");
 
-// Register a new user
-router.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
+router.post("/login", async (req, res) => {
   try {
-    let user = await User.findOne({ email });
-
-    if (user) {
-      return res.status(400).json({ msg: 'User already exists' });
-    }
-
-    user = new User({
-      name,
-      email,
-      password
+    const schema = joi.object().keys({
+      email: joi.string().email().required(),
+      password: joi.string().min(6).max(20).required(),
     });
-
-    await user.save();
-
-    res.status(201).json({ msg: 'User registered successfully' });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    const result = schema.validate(req.body);
+    if (result.error) {
+      throw result.error.details[0].message;
+    }
+    let checkUserLogin = await models.verifyUser(result.value);
+    if (checkUserLogin.error) {
+      throw checkUserLogin.message;
+    }
+    // set session for the logged in user
+    req.session.user = {
+      name: checkUserLogin.data.name,
+      email: checkUserLogin.data.email,
+    };
+    res.json(checkUserLogin);
+  } catch (e) {
+    res.json({ error: true, message: e });
   }
 });
 
-// Login user
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+router.post("/signup", async (req, res) => {
   try {
-    let user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(400).json({ msg: 'Invalid Credentials' });
+    const schema = joi.object().keys({
+      name: joi.string().min(3).max(45).required(),
+      email: joi.string().email().required(),
+      password: joi.string().min(6).max(20).required(),
+    });
+    const result = schema.validate(req.body);
+    if (result.error) {
+      throw result.error.details[0].message;
     }
-
-    const isMatch = await user.comparePassword(password);
-
-    if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid Credentials' });
-    }
-
-    // Example of generating JWT token for authentication
-    const payload = {
-      user: {
-        id: user.id
-      }
-    };
-
-    jwt.sign(
-      payload,
-      'yourjwtsecret',
-      { expiresIn: 3600 }, // token expires in 1 hour
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    let addUserResponse = await models.addUser(result.value);
+    res.json(addUserResponse);
+  } catch (e) {
+    res.json({ error: true, message: e });
   }
+});
+
+router.get("/logout", (req, res) => {
+  if (req.session.user) {
+    req.session.destroy();
+  }
+  res.redirect("/");
 });
 
 module.exports = router;
